@@ -150,7 +150,7 @@ export const useSocketListener = () => {
  * @param delay - Thời gian delay (ms)
  * @returns Function đã được debounce
  */
-export function useDebounce<T extends (...args: unknown[]) => void>(callback: T, delay: number) {
+export function useDebounce<T extends (...args: any[]) => void>(callback: T, delay: number) {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const debouncedCallback = useCallback(

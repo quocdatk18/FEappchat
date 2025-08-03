@@ -13,7 +13,7 @@ interface UseLoadingReturn {
    * T: Array của parameters của async function
    * R: Return type của async function
    */
-  withLoading: <T extends unknown[], R>(
+  withLoading: <T extends any[], R>(
     asyncFn: (...args: T) => Promise<R>
   ) => (...args: T) => Promise<R>;
   /** Function để bắt đầu loading */
@@ -45,7 +45,7 @@ export const useLoading = (initialState = false): UseLoadingReturn => {
    * Ví dụ: withLoading<[string, number], string>(async (name, age) => { return "result"; })
    */
   const withLoading = useCallback(
-    <T extends unknown[], R>(asyncFn: (...args: T) => Promise<R>) =>
+    <T extends any[], R>(asyncFn: (...args: T) => Promise<R>) =>
       async (...args: T): Promise<R> => {
         try {
           setLoading(true);
