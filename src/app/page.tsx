@@ -30,7 +30,7 @@ export default function Home() {
   const { isAuthenticated, user, initialized } = useSelector(
     (state: RootState) => state.userReducer
   );
-
+  console.log('API URL:', process.env.NEXT_PUBLIC_API_URL);
   const selectedUser = useSelector((state: RootState) => state.userReducer.selectedUser);
   const selectedConversation = useSelector(
     (state: RootState) => state.conversationReducer.selectedConversation
