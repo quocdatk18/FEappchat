@@ -216,10 +216,6 @@ const conversationSlice = createSlice({
     setSelectedUser(state, action: PayloadAction<UserType | null>) {
       state.selectedUser = action.payload;
     },
-    addNewConversation(state, action: PayloadAction<Conversation>) {
-      // Thêm conversation mới vào đầu list
-      state.conversations.unshift(action.payload);
-    },
     updateLastMessage(
       state,
       action: PayloadAction<{
@@ -363,16 +359,6 @@ const conversationSlice = createSlice({
             state.selectedConversation = action.payload;
           }
         }
-      })
-      .addCase(getGroupInfo.pending, (state) => {
-        // Có thể thêm loading state nếu cần
-      })
-      .addCase(getGroupInfo.fulfilled, (state, action) => {
-        // Lưu thông tin nhóm vào state nếu cần
-        // Hiện tại chỉ trả về data, không cần lưu vào state
-      })
-      .addCase(getGroupInfo.rejected, (state, action) => {
-        // Xử lý lỗi nếu cần
       });
   },
 });

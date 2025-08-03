@@ -2,7 +2,6 @@ import axiosClient from '@/api/axiosClient';
 import { AuthState, UserType } from '@/types';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { clearAllUserStatus } from '../userStatus/userStatusSlice';
 
 const initialState: AuthState & { selectedUser?: UserType | null } = {
   user: null,
@@ -19,7 +18,7 @@ export const handleLogin = createAsyncThunk(
   'auth/login',
   async (credentials: { username: string; password: string }, thunkAPI) => {
     try {
-      const { data } = await axiosClient.post('/auth/login', credentials);
+      const { data } = await axios.post('/auth/login', credentials);
 
       await axios.patch(
         `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/user/${data.user._id}/online`,
@@ -48,7 +47,7 @@ export const handleRegister = createAsyncThunk(
   'auth/register',
   async (credentials: { username: string; password: string }, thunkAPI) => {
     try {
-      const { data } = await axiosClient.post('/auth/register', credentials);
+      const { data } = await axios.post('/auth/register', credentials);
       return data; // { token, user }
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.response.data.message || 'register failed');
@@ -78,9 +77,7 @@ export const searchUserByEmail = createAsyncThunk<UserType | null, string, { rej
   async (email, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axiosClient.get(`/user/searchByEmail?email=${email}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axiosClient.get(`/user/searchByEmail?email=${email}`);
       return res.data || null;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Không tìm thấy user');
@@ -93,9 +90,7 @@ export const getUserById = createAsyncThunk<UserType | null, string, { rejectVal
   async (userId, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axiosClient.get(`/user/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axiosClient.get(`/user/${userId}`);
       return res.data || null;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Không tìm thấy user');
@@ -119,9 +114,7 @@ export const handleUpload = createAsyncThunk(
   'user/handleUpload',
   async (formData: FormData, { rejectWithValue }) => {
     try {
-      const res = await axiosClient.post('/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      const res = await axiosClient.post('/upload', formData);
       return res.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Upload failed');

@@ -101,7 +101,7 @@ export const useSocketListener = () => {
             conversationId: data.conversationId,
             lastMessage: data.content,
             lastMessageType: data.type || 'text',
-            lastMessageSenderId: data.senderId,
+            lastMessageSenderId: data.senderId._id,
           })
         );
       }
