@@ -35,7 +35,7 @@ export default function GroupInfoModal({ visible, onClose, conversationId }: Gro
   );
   const currentUser = useSelector((state: RootState) => state.userReducer.user);
   const [groupMembers, setGroupMembers] = useState<UserType[]>([]);
-  const [groupInfo, setGroupInfo] = useState<any>(null);
+  const [groupInfo, setGroupInfo] = useState<Conversation | null>(null);
   const [showAddMembersModal, setShowAddMembersModal] = useState(false);
   const [removingMembers, setRemovingMembers] = useState<string[]>([]);
   const [isLoadingGroupInfo, setIsLoadingGroupInfo] = useState(false);

@@ -142,7 +142,7 @@ export default function UserProfileModal({
         // Gọi redux thunk đổi mật khẩu ở đây
         const result = await dispatch(
           // @ts-ignore
-          require('@/lib/store/reducer/user/userSlice').changePassword({
+          (await import('@/lib/store/reducer/user/userSlice')).changePassword({
             currentPassword: values.currentPassword,
             newPassword: values.newPassword,
           })

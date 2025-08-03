@@ -1,5 +1,5 @@
 import axiosClient from '@/api/axiosClient';
-import { AuthState, UserType } from '@/types';
+import { AuthState, UserType, Gender } from '@/types';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 
@@ -33,9 +33,10 @@ export const handleLogin = createAsyncThunk(
       );
 
       return data; // { token, user }
-    } catch (error: any) {
-      if (error.response) {
-        return thunkAPI.rejectWithValue(error.response.data.message || 'Đăng nhập thất bại');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      if (err.response) {
+        return thunkAPI.rejectWithValue(err.response.data?.message || 'Đăng nhập thất bại');
       } else {
         return thunkAPI.rejectWithValue('Mất kết nối đến server, vui lòng thử lại.');
       }
@@ -49,8 +50,9 @@ export const handleRegister = createAsyncThunk(
     try {
       const { data } = await axios.post('/auth/register', credentials);
       return data; // { token, user }
-    } catch (error: any) {
-      return thunkAPI.rejectWithValue(error.response.data.message || 'register failed');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      return thunkAPI.rejectWithValue(err.response?.data?.message || 'register failed');
     }
   }
 );
@@ -64,7 +66,7 @@ export const checkAuth = createAsyncThunk('auth/checkAuth', async (_, thunkAPI) 
       return data;
     }
     return thunkAPI.rejectWithValue('Token hết hạn hoặc không hợp lệ');
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Nếu lỗi (token hết hạn, không hợp lệ)
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -79,8 +81,9 @@ export const searchUserByEmail = createAsyncThunk<UserType | null, string, { rej
       const token = localStorage.getItem('token');
       const res = await axiosClient.get(`/user/searchByEmail?email=${email}`);
       return res.data || null;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Không tìm thấy user');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      return rejectWithValue(err.response?.data?.message || 'Không tìm thấy user');
     }
   }
 );
@@ -92,8 +95,9 @@ export const getUserById = createAsyncThunk<UserType | null, string, { rejectVal
       const token = localStorage.getItem('token');
       const res = await axiosClient.get(`/user/${userId}`);
       return res.data || null;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Không tìm thấy user');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      return rejectWithValue(err.response?.data?.message || 'Không tìm thấy user');
     }
   }
 );
@@ -104,8 +108,9 @@ export const searchUsers = createAsyncThunk<UserType[], string, { rejectValue: s
     try {
       const res = await axiosClient.get(`/user/search?q=${query}`);
       return res.data || [];
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Không tìm thấy user');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      return rejectWithValue(err.response?.data?.message || 'Không tìm thấy user');
     }
   }
 );
@@ -116,65 +121,79 @@ export const handleUpload = createAsyncThunk(
     try {
       const res = await axiosClient.post('/upload', formData);
       return res.data;
-    } catch (err: any) {
-      return rejectWithValue(err.response?.data?.message || 'Upload failed');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      return rejectWithValue(error.response?.data?.message || 'Upload failed');
     }
   }
 );
 
 export const updateUser = createAsyncThunk<
-  any, // trả về user mới nhất
+  {
+    _id: string;
+    username: string;
+    email: string;
+    gender: Gender;
+    avatar: string;
+    nickname?: string;
+    online: boolean;
+  }, // trả về user mới nhất
   { nickname?: string; avatar?: string; gender?: string },
   { rejectValue: string }
 >('user/updateUser', async (updateData, { rejectWithValue }) => {
   try {
     const res = await axiosClient.patch('/user/profile', updateData);
     return res.data;
-  } catch (err: any) {
-    return rejectWithValue(err.response?.data?.message || 'Update failed');
+  } catch (err: unknown) {
+    const error = err as { response?: { data?: { message?: string } } };
+    return rejectWithValue(error.response?.data?.message || 'Update failed');
   }
 });
 
 // Đổi mật khẩu
 export const changePassword = createAsyncThunk<
-  any,
+  { success: boolean; message: string },
   { currentPassword: string; newPassword: string },
   { rejectValue: string }
 >('user/changePassword', async (passwordData, { rejectWithValue }) => {
   try {
     const res = await axiosClient.post('/user/change-password', passwordData);
     return res.data;
-  } catch (err: any) {
-    return rejectWithValue(err.response?.data?.message || 'Change password failed');
+  } catch (err: unknown) {
+    const error = err as { response?: { data?: { message?: string } } };
+    return rejectWithValue(error.response?.data?.message || 'Change password failed');
   }
 });
 
 // Yêu cầu đổi email - gửi yêu cầu qua email support
 export const requestChangeEmail = createAsyncThunk<
-  any,
+  { success: boolean; message: string },
   { currentPassword: string; newEmail: string; reason: string },
   { rejectValue: string }
 >('user/requestChangeEmail', async (emailData, { rejectWithValue }) => {
   try {
     const res = await axiosClient.post('/user/request-change-email', emailData);
     return res.data;
-  } catch (err: any) {
-    return rejectWithValue(err.response?.data?.message || 'Request change email failed');
+  } catch (err: unknown) {
+    const error = err as { response?: { data?: { message?: string } } };
+    return rejectWithValue(error.response?.data?.message || 'Request change email failed');
   }
 });
 
 // Quên mật khẩu - sinh mật khẩu mới và gửi về email
-export const forgotPassword = createAsyncThunk<any, { email: string }, { rejectValue: string }>(
-  'user/forgotPassword',
-  async (emailData, { rejectWithValue }) => {
-    try {
-      const res = await axiosClient.post('/user/forgot-password', emailData);
-      return res.data;
-    } catch (err: any) {
-      return rejectWithValue(err.response?.data?.message || 'Forgot password failed');
-    }
+export const forgotPassword = createAsyncThunk<
+  { success: boolean; message: string },
+  { email: string },
+  { rejectValue: string }
+>('user/forgotPassword', async (emailData, { rejectWithValue }) => {
+  try {
+    const res = await axiosClient.post('/user/forgot-password', emailData);
+    return res.data;
+  } catch (err: unknown) {
+    const error = err as { response?: { data?: { message?: string } } };
+    return rejectWithValue(error.response?.data?.message || 'Forgot password failed');
   }
-);
+});
 
 export const sendSupportRequest = createAsyncThunk<
   any,
@@ -184,8 +203,9 @@ export const sendSupportRequest = createAsyncThunk<
   try {
     const res = await axiosClient.post('/user/support-request', supportData);
     return res.data;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || 'Gửi yêu cầu hỗ trợ thất bại');
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: { message?: string } } };
+    return rejectWithValue(err.response?.data?.message || 'Gửi yêu cầu hỗ trợ thất bại');
   }
 });
 

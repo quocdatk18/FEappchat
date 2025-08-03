@@ -21,22 +21,31 @@ export const fetchConversations = createAsyncThunk<Conversation[], void, { rejec
     try {
       const res = await axiosClient.get('/conversations');
 
-      const mappedConversations = res.data.map((item: any) => ({
-        ...item,
-        receiver: item.isGroup ? undefined : item.receiver,
-        unreadCount: item.unreadCount || 0,
-        deletedAt: item.deletedAt && typeof item.deletedAt === 'object' ? item.deletedAt : {},
-        deactivatedAt: item.deactivatedAt ? String(item.deactivatedAt) : null,
-      }));
+      const mappedConversations = res.data.map((item: unknown) => {
+        const conversationItem = item as any;
+        return {
+          ...conversationItem,
+          receiver: conversationItem.isGroup ? undefined : conversationItem.receiver,
+          unreadCount: conversationItem.unreadCount || 0,
+          deletedAt:
+            conversationItem.deletedAt && typeof conversationItem.deletedAt === 'object'
+              ? conversationItem.deletedAt
+              : {},
+          deactivatedAt: conversationItem.deactivatedAt
+            ? String(conversationItem.deactivatedAt)
+            : null,
+        };
+      });
       return mappedConversations;
-    } catch (error: any) {
-      if (error.code === 'ECONNABORTED') {
+    } catch (error: unknown) {
+      const err = error as { code?: string; response?: { data?: { message?: string } } };
+      if (err.code === 'ECONNABORTED') {
         return rejectWithValue('Kết nối mạng chậm, vui lòng thử lại');
       }
       if (!navigator.onLine) {
         return rejectWithValue('Không có kết nối mạng');
       }
-      return rejectWithValue(error.response?.data?.message || 'Không thể tải danh sách chat');
+      return rejectWithValue(err.response?.data?.message || 'Không thể tải danh sách chat');
     }
   }
 );
@@ -70,8 +79,9 @@ export const createConversation = createAsyncThunk<
       });
 
       return res.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to create conversation');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      return rejectWithValue(err.response?.data?.message || 'Failed to create conversation');
     }
   }
 );
@@ -83,8 +93,9 @@ export const searchConversation = createAsyncThunk(
     try {
       const res = await axiosClient.get(`/conversations/search?q=${query}`);
       return res.data;
-    } catch (error: any) {
-      return thunkAPI.rejectWithValue(error.response?.data?.message || 'Lỗi tìm kiếm');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      return thunkAPI.rejectWithValue(err.response?.data?.message || 'Lỗi tìm kiếm');
     }
   }
 );
@@ -102,15 +113,16 @@ export const deleteConversationForUser = createAsyncThunk<
         deleteMessages,
       });
       return conversationId;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to delete conversation');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      return rejectWithValue(err.response?.data?.message || 'Failed to delete conversation');
     }
   }
 );
 
 // --- Thêm thành viên vào nhóm ---
 export const addMembersToGroup = createAsyncThunk<
-  any,
+  Conversation,
   { conversationId: string; memberIds: string[] },
   { rejectValue: string }
 >('conversation/addMembersToGroup', async ({ conversationId, memberIds }, { rejectWithValue }) => {
@@ -119,14 +131,15 @@ export const addMembersToGroup = createAsyncThunk<
       memberIds,
     });
     return res.data;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || 'Thêm thành viên thất bại');
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: { message?: string } } };
+    return rejectWithValue(err.response?.data?.message || 'Thêm thành viên thất bại');
   }
 });
 
 // --- Cập nhật thông tin nhóm ---
 export const updateGroup = createAsyncThunk<
-  any,
+  Conversation,
   { conversationId: string; name?: string; avatar?: string },
   { rejectValue: string }
 >('conversation/updateGroup', async ({ conversationId, name, avatar }, { rejectWithValue }) => {
@@ -136,14 +149,15 @@ export const updateGroup = createAsyncThunk<
       avatar,
     });
     return res.data;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || 'Cập nhật thông tin thất bại');
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: { message?: string } } };
+    return rejectWithValue(err.response?.data?.message || 'Cập nhật thông tin thất bại');
   }
 });
 
 // --- Xóa thành viên khỏi nhóm ---
 export const removeMembersFromGroup = createAsyncThunk<
-  any,
+  Conversation,
   { conversationId: string; memberIds: string[] },
   { rejectValue: string }
 >(
@@ -154,36 +168,40 @@ export const removeMembersFromGroup = createAsyncThunk<
         memberIds,
       });
       return res.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Xóa thành viên thất bại');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      return rejectWithValue(err.response?.data?.message || 'Xóa thành viên thất bại');
     }
   }
 );
 
 // --- Đánh dấu conversation đã đọc ---
-export const markConversationAsRead = createAsyncThunk<any, string, { rejectValue: string }>(
-  'conversation/markConversationAsRead',
-  async (conversationId, { rejectWithValue }) => {
-    try {
-      const res = await axiosClient.patch(`/conversations/${conversationId}/read`);
-      return res.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Đánh dấu đã đọc thất bại');
-    }
+export const markConversationAsRead = createAsyncThunk<
+  { success: boolean },
+  string,
+  { rejectValue: string }
+>('conversation/markConversationAsRead', async (conversationId, { rejectWithValue }) => {
+  try {
+    const res = await axiosClient.patch(`/conversations/${conversationId}/read`);
+    return res.data;
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: { message?: string } } };
+    return rejectWithValue(err.response?.data?.message || 'Đánh dấu đã đọc thất bại');
   }
-);
+});
 
 // --- Lấy thông tin chi tiết nhóm ---
 export const getGroupInfo = createAsyncThunk<
-  any,
+  Conversation,
   string, // conversationId
   { rejectValue: string }
 >('conversation/getGroupInfo', async (conversationId, { rejectWithValue }) => {
   try {
     const res = await axiosClient.get(`/conversations/${conversationId}/group-info`);
     return res.data;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || 'Không thể tải thông tin nhóm');
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: { message?: string } } };
+    return rejectWithValue(err.response?.data?.message || 'Không thể tải thông tin nhóm');
   }
 });
 
@@ -193,8 +211,9 @@ export const deactivateGroup = createAsyncThunk(
     try {
       const res = await axiosClient.patch(`/conversations/${conversationId}/deactivate`);
       return res.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Không thể giải tán nhóm');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      return rejectWithValue(err.response?.data?.message || 'Không thể giải tán nhóm');
     }
   }
 );

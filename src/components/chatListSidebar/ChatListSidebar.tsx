@@ -337,9 +337,14 @@ const ChatListSidebar = React.memo(function ChatListSidebar() {
           <>
             <List
               dataSource={listData}
-              renderItem={(item: any) => {
+              renderItem={(item: Conversation | UserType) => {
+                // Type guard to check if item is UserType (search result)
+                const isUserType = (obj: Conversation | UserType): obj is UserType => {
+                  return 'username' in obj && 'email' in obj && !('isGroup' in obj);
+                };
+
                 // Kiểm tra nếu là user search result
-                if (!item.isGroup && !item.lastMessage && item.username) {
+                if (isUserType(item)) {
                   return (
                     <List.Item
                       onClick={() => handleSelectUser(item)}
@@ -364,17 +369,20 @@ const ChatListSidebar = React.memo(function ChatListSidebar() {
                   );
                 }
 
+                // At this point, item is definitely Conversation
+                const conversation = item as Conversation;
+
                 // Xử lý hiển thị cho cả 1-1 và nhóm chat
                 let displayName = '';
                 let displayAvatar = '';
 
-                if (item.isGroup) {
+                if (conversation.isGroup) {
                   // Nhóm chat
-                  displayName = item.name || '';
-                  displayAvatar = item.avatar || '/avtDefault.png';
+                  displayName = conversation.name || '';
+                  displayAvatar = conversation.avatar || '/avtDefault.png';
                 } else {
                   // 1-1 chat
-                  const receiver = item.memberPreviews?.find(
+                  const receiver = conversation.memberPreviews?.find(
                     (user: UserType) => user._id !== currentUser?._id
                   );
                   displayName = receiver ? receiver.nickname || receiver.username : '';
@@ -383,8 +391,8 @@ const ChatListSidebar = React.memo(function ChatListSidebar() {
 
                 return (
                   <List.Item
-                    className={`${styles.chatItem} ${selectedConversation?._id === item._id ? styles.active : ''}`}
-                    onClick={() => handleSelect(item._id)}
+                    className={`${styles.chatItem} ${selectedConversation?._id === conversation._id ? styles.active : ''}`}
+                    onClick={() => handleSelect(conversation._id)}
                   >
                     <div
                       className={styles.avatarContainer}
@@ -397,9 +405,9 @@ const ChatListSidebar = React.memo(function ChatListSidebar() {
                         style={{ display: 'block' }}
                       />
                       {/* Hiển thị trạng thái online cho 1-1 chat */}
-                      {!item.isGroup &&
+                      {!conversation.isGroup &&
                         (() => {
-                          const receiver = item.memberPreviews?.find(
+                          const receiver = conversation.memberPreviews?.find(
                             (user: UserType) => user._id !== currentUser?._id
                           );
                           const receiverId = receiver?._id;
@@ -412,10 +420,10 @@ const ChatListSidebar = React.memo(function ChatListSidebar() {
                           );
                         })()}
                       {/* Hiển thị dấu xanh cho nhóm khi có thành viên online */}
-                      {item.isGroup &&
+                      {conversation.isGroup &&
                         (() => {
                           const onlineCount =
-                            item.members?.filter(
+                            conversation.members?.filter(
                               (memberId: string) =>
                                 memberId !== currentUser?._id && userStatuses[memberId]?.isOnline
                             ).length || 0;
@@ -432,42 +440,46 @@ const ChatListSidebar = React.memo(function ChatListSidebar() {
                       <div className={styles.message}>
                         {(() => {
                           // Kiểm tra nếu có lastMessageType hoặc lastMessage
-                          if (!item.lastMessageType && !item.lastMessage) return '';
+                          if (!conversation.lastMessageType && !conversation.lastMessage) return '';
 
                           const isCurrentUserMessage =
-                            item.lastMessageSenderId === currentUser?._id;
+                            conversation.lastMessageSenderId === currentUser?._id;
                           const prefix = isCurrentUserMessage ? 'Bạn: ' : '';
 
-                          if (item.lastMessageType === 'image') {
+                          if (conversation.lastMessageType === 'image') {
                             return `${prefix}Đã gửi 1 ảnh`;
-                          } else if (item.lastMessageType === 'video') {
+                          } else if (conversation.lastMessageType === 'video') {
                             return `${prefix}Đã gửi 1 video`;
-                          } else if (item.lastMessageType === 'file') {
+                          } else if (conversation.lastMessageType === 'file') {
                             return `${prefix}Đã gửi 1 file`;
                           } else {
-                            return `${prefix}${item.lastMessage}`;
+                            return `${prefix}${conversation.lastMessage}`;
                           }
                         })()}
                       </div>
                     </div>
                     <div className={styles.rightContent}>
                       <div className={styles.time}>
-                        {item.updatedAt ? formatUpdatedAt(item.updatedAt) : ''}
+                        {conversation.updatedAt ? formatUpdatedAt(conversation.updatedAt) : ''}
                       </div>
                       {/* Hiển thị số tin nhắn chưa đọc */}
                       {(() => {
                         const userId = currentUser?._id || '';
                         // Handle cả trường hợp unreadCount là number (cũ) và object/map (mới)
                         let unreadCount = 0;
-                        if (typeof item.unreadCount === 'number') {
+                        if (typeof conversation.unreadCount === 'number') {
                           // Trường hợp cũ: unreadCount là number
-                          unreadCount = item.unreadCount;
-                        } else if (item.unreadCount && typeof item.unreadCount === 'object') {
+                          unreadCount = conversation.unreadCount;
+                        } else if (
+                          conversation.unreadCount &&
+                          typeof conversation.unreadCount === 'object'
+                        ) {
                           // Trường hợp mới: unreadCount là object/map
+                          const unreadCountObj = conversation.unreadCount as any;
                           unreadCount =
-                            typeof item.unreadCount.get === 'function'
-                              ? item.unreadCount.get(userId) || 0
-                              : item.unreadCount[userId] || 0;
+                            typeof unreadCountObj.get === 'function'
+                              ? unreadCountObj.get(userId) || 0
+                              : unreadCountObj[userId] || 0;
                         }
                         const shouldShowBadge = unreadCount > 0;
                         return shouldShowBadge ? (
@@ -480,7 +492,7 @@ const ChatListSidebar = React.memo(function ChatListSidebar() {
                         className={styles.deleteIcon}
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleDeleteConversation(item._id);
+                          handleDeleteConversation(conversation._id);
                         }}
                       />
                     </div>
