@@ -21,6 +21,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import AddMembersModal from '../addMembers/AddMembersModal';
 import UserProfileModal from '../userProfile/UserProfileModal';
 import styles from './GroupInfoModal.module.scss';
+import axiosClient from '@/api/axiosClient';
 
 interface GroupInfoModalProps {
   visible: boolean;
@@ -108,16 +109,14 @@ export default function GroupInfoModal({ visible, onClose, conversationId }: Gro
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/upload?type=avatar`,
-      {
-        method: 'POST',
-        body: formData,
-      }
-    );
+    const response = await axiosClient.post('/upload?type=avatar', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
 
-    if (response.ok) {
-      const data = await response.json();
+    if (response.status === 200) {
+      const data = response.data;
       const url = data.url;
       await dispatch(updateGroup({ conversationId, avatar: url }));
       message.success('Đổi avatar nhóm thành công!');

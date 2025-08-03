@@ -11,6 +11,7 @@ import { Avatar, Button, Checkbox, Input, List, message, Modal, Skeleton, Upload
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './CreateGroupModal.module.scss';
+import axiosClient from '@/api/axiosClient';
 
 interface CreateGroupModalProps {
   visible: boolean;
@@ -182,22 +183,21 @@ export default function CreateGroupModal({
     const formData = new FormData();
     formData.append('file', file);
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/upload?type=avatar`,
-      {
-        method: 'POST',
-        body: formData,
-      }
-    );
+    const res = await axiosClient.post('/upload?type=avatar', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
 
-    const data = await res.json();
+    const data = res.data;
     const url = data.url;
 
     if (typeof url === 'string') {
       setGroupAvatar(url);
+      message.success('Upload avatar thành công!');
       return { url };
     } else {
-      throw new Error('Không lấy được url ảnh');
+      throw new Error('Upload trả về link không hợp lệ!');
     }
   });
 

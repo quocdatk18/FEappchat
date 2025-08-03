@@ -12,6 +12,7 @@ import {
   setSelectedUser,
 } from '@/lib/store/reducer/conversationSlice/conversationSlice';
 import { setSelectedUser as setUserSelected } from '@/lib/store/reducer/user/userSlice';
+import axiosClient from '@/api/axiosClient';
 
 export type UserProfile = {
   _id: string;
@@ -58,16 +59,13 @@ export default function UserProfileModal({
     const formData = new FormData();
     formData.append('file', file);
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/upload?type=avatar`,
-      {
-        method: 'POST',
-        body: formData,
-      }
-    );
+    const res = await axiosClient.post('/upload?type=avatar', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
 
-    const data = await res.json();
-    const url = data.url;
+    const url = res.data.url;
 
     if (typeof url === 'string') {
       await dispatch(updateUser({ avatar: url }));

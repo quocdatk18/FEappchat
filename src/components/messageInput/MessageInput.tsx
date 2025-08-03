@@ -22,6 +22,8 @@ import {
 import { setSelectedUser as setUserSelected } from '@/lib/store/reducer/user/userSlice';
 import { Conversation } from '@/types';
 import dayjs from 'dayjs';
+import axiosClient from '@/api/axiosClient';
+import { sendMessage } from '@/lib/store/reducer/message/MessageSlice';
 
 const allowedExts = [
   'jpg',
@@ -79,111 +81,45 @@ export default function MessageInput() {
   };
 
   // Hàm chung để upload file và gửi message
-  const uploadAndSendFile = async (
-    file: File,
-    type: 'image' | 'video' | 'file',
-    caption?: string
-  ) => {
-    if (!currentUser) return false;
-
-    // Thêm file vào danh sách đang upload
-    const fileId = `${file.name}-${Date.now()}`;
-    setUploadingFiles((prev) => new Set([...prev, fileId]));
-
+  const uploadAndSendFile = async (file: File) => {
     try {
+      setUploadingFiles((prev) => new Set([...prev, file.name]));
+
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('type', 'message');
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/upload`,
-        {
-          method: 'POST',
-          body: formData,
-        }
-      );
+      const res = await axiosClient.post('/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
-      if (!res.ok) {
-        throw new Error('Upload failed');
+      const { url, originalName, mimetype } = res.data;
+
+      // Gửi tin nhắn với file
+      if (selectedConversation) {
+        await dispatch(
+          sendMessage({
+            conversationId: selectedConversation._id,
+            content: `Đã gửi file: ${originalName}`,
+            mediaUrl: url,
+            originalName,
+            mimetype,
+          })
+        );
       }
 
-      const data = await res.json();
-      const fileUrl = data.url; // Sửa lại dòng này
-      const mimetype = data.mimetype; // lấy mimetype thực tế
-      const originalName = file.name; // lấy tên file gốc
-
-      // Nếu không có selectedConversation nhưng có selectedUser, tạo conversation mới
-      if (!selectedConversation && selectedUser) {
-        try {
-          const resultAction = await dispatch(
-            createConversation({
-              receiverId: selectedUser._id,
-              content: caption || '',
-              type: type,
-              mediaUrl: fileUrl,
-            })
-          );
-          const newConversation = resultAction.payload as Conversation;
-          if (newConversation && newConversation._id) {
-            dispatch(setSelectedConversation(newConversation));
-            dispatch(setUserSelected(null));
-            // Không cần gửi lại vì message đã được tạo trong createConversation
-          }
-          return true;
-        } catch (error: unknown) {
-          console.error('Lỗi tạo conversation:', error);
-          return false;
-        }
-      }
-
-      // Nếu không có selectedConversation và selectedUser, không thể gửi
-      if (!selectedConversation) return false;
-
-      // Xử lý cho cả 1-1 và nhóm chat
-      if (selectedConversation.isGroup && selectedConversation.members) {
-        // Nhóm chat: gửi file đến tất cả thành viên
-        socket.emit('send_message', {
-          fromUserId: currentUser?._id,
-          receiverId: '', // Để trống cho nhóm chat
-          conversationId: selectedConversation._id,
-          content: caption || '',
-          type: type,
-          mediaUrl: fileUrl,
-          mimetype: mimetype,
-          originalName: originalName,
-        });
-      } else {
-        // 1-1 chat: logic cũ
-        let receiverId;
-        if (selectedConversation.receiver?._id) {
-          receiverId = selectedConversation.receiver._id;
-        } else if (selectedConversation.members) {
-          receiverId = selectedConversation.members.find((id) => id !== currentUser?._id);
-        }
-
-        if (!receiverId) return false;
-
-        socket.emit('send_message', {
-          fromUserId: currentUser?._id,
-          receiverId: receiverId,
-          conversationId: selectedConversation._id,
-          content: caption || '',
-          type: type,
-          mediaUrl: fileUrl,
-          mimetype: mimetype,
-          originalName: originalName,
-        });
-      }
-
-      return true;
-    } catch (error) {
-      console.error('Upload error:', error);
-      return false;
-    } finally {
-      // Xóa file khỏi danh sách đang upload
       setUploadingFiles((prev) => {
         const newSet = new Set(prev);
-        newSet.delete(fileId);
+        newSet.delete(file.name);
+        return newSet;
+      });
+    } catch (error: unknown) {
+      console.error('Upload file error:', error);
+      message.error('Upload file thất bại!');
+      setUploadingFiles((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(file.name);
         return newSet;
       });
     }
@@ -202,7 +138,7 @@ export default function MessageInput() {
         content: 'Tệp bạn chọn không phải là ảnh. Bạn vẫn muốn gửi?',
         onOk: async () => {
           try {
-            await uploadAndSendFile(file, 'image');
+            await uploadAndSendFile(file);
           } catch (err) {
             message.error('Hiện tại chúng tôi chưa phát triển cho loại file này!');
           }
@@ -213,7 +149,7 @@ export default function MessageInput() {
 
     // Upload ảnh như bình thường
     try {
-      await uploadAndSendFile(file, 'image');
+      await uploadAndSendFile(file);
     } catch (err) {
       message.error('Hiện tại chúng tôi chưa phát triển cho loại file này!');
     }
@@ -233,7 +169,7 @@ export default function MessageInput() {
         content: 'Bạn đang gửi ảnh dưới dạng tệp. Tiếp tục gửi?',
         onOk: async () => {
           try {
-            await uploadAndSendFile(file, 'file');
+            await uploadAndSendFile(file);
           } catch (error: unknown) {
             message.error('Hiện tại chúng tôi chưa phát triển cho loại file này!');
           }
@@ -245,7 +181,7 @@ export default function MessageInput() {
     // Nếu là video hoặc file khác, upload và gửi luôn
     const isVideo = file.type.startsWith('video/');
     try {
-      await uploadAndSendFile(file, isVideo ? 'video' : 'file');
+      await uploadAndSendFile(file);
     } catch (error: unknown) {
       message.error('File không được hỗ trợ!');
     }
@@ -291,7 +227,7 @@ export default function MessageInput() {
     for (let i = 0; i < pastedImages.length; i++) {
       const file = pastedImages[i];
       // Gửi ảnh với caption (text) nếu có
-      await uploadAndSendFile(file, 'image', hasText ? content : undefined);
+      await uploadAndSendFile(file);
     }
 
     // Clear preview sau khi gửi ảnh

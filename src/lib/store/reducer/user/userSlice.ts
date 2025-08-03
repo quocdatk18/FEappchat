@@ -1,7 +1,6 @@
 import axiosClient from '@/api/axiosClient';
 import { AuthState, UserType, Gender } from '@/types';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
 
 const initialState: AuthState & { selectedUser?: UserType | null } = {
   user: null,
@@ -18,22 +17,11 @@ export const handleLogin = createAsyncThunk(
   'auth/login',
   async (credentials: { username: string; password: string }, thunkAPI) => {
     try {
-      const { data } = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/auth/login`,
-        credentials
-      );
+      const { data } = await axiosClient.post('/auth/login', credentials);
 
-      await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/user/${data.user._id}/online`,
-        {
-          isOnline: false,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${data.token}`, // dùng token vừa login xong
-          },
-        }
-      );
+      await axiosClient.patch(`/user/${data.user._id}/online`, {
+        isOnline: false,
+      });
 
       return data; // { token, user }
     } catch (error: unknown) {
@@ -51,10 +39,7 @@ export const handleRegister = createAsyncThunk(
   'auth/register',
   async (credentials: { username: string; password: string }, thunkAPI) => {
     try {
-      const { data } = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/auth/register`,
-        credentials
-      );
+      const { data } = await axiosClient.post('/auth/register', credentials);
       return data; // { token, user }
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string } } };
