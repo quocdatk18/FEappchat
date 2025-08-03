@@ -219,10 +219,14 @@ export default function CreateGroupModal({
     }
   };
 
-  const customRequest = async ({ file, onSuccess, onError }: { 
-    file: File; 
-    onSuccess: (data: any, file: File) => void; 
-    onError: (error: any) => void; 
+  const customRequest = async ({
+    file,
+    onSuccess,
+    onError,
+  }: {
+    file: File;
+    onSuccess: (data: unknown, file: File) => void;
+    onError: (error: unknown) => void;
   }) => {
     try {
       const data = await uploadAvatar(file as File);

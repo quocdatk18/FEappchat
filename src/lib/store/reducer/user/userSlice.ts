@@ -209,8 +209,9 @@ const authSlice = createSlice({
 
       // Disconnect socket khi logout
       if (typeof window !== 'undefined') {
-        const socket = require('@/api/socket').default;
-        socket.disconnect();
+        import('@/api/socket').then(({ default: socket }) => {
+          socket.disconnect();
+        });
       }
     },
     loadUserFromStorage: (state) => {

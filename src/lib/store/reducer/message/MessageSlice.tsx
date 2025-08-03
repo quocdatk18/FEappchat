@@ -85,7 +85,7 @@ export const deleteMessageForAll = createAsyncThunk<string, string, { rejectValu
 
 // Recall message
 export const recallMessage = createAsyncThunk<
-  { success: boolean; message: string; data?: any },
+  { success: boolean; message: string; data?: unknown },
   string,
   { rejectValue: string }
 >('messages/recallMessage', async (messageId, { rejectWithValue }) => {
@@ -179,12 +179,13 @@ const messageSlice = createSlice({
       })
       .addCase(recallMessage.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.messages.findIndex((m) => m._id === action.payload.data._id);
+        const data = action.payload.data as { _id: string; recallAt?: string };
+        const index = state.messages.findIndex((m) => m._id === data._id);
         if (index !== -1) {
           state.messages[index] = {
             ...state.messages[index],
             recalled: true,
-            recallAt: action.payload.data.recallAt,
+            recallAt: data.recallAt,
           };
         }
       })

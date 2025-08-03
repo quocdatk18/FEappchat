@@ -7,7 +7,7 @@ import {
   FileAddOutlined,
   LikeOutlined,
   PictureOutlined,
-  SendOutlined
+  SendOutlined,
 } from '@ant-design/icons';
 import { Button, Form, Input, message, Modal, Spin, Upload } from 'antd';
 import React, { useState } from 'react';
@@ -17,9 +17,10 @@ import styles from './MessageInput.module.scss';
 import {
   createConversation,
   fetchConversations,
-  setSelectedConversation
+  setSelectedConversation,
 } from '@/lib/store/reducer/conversationSlice/conversationSlice';
 import { setSelectedUser as setUserSelected } from '@/lib/store/reducer/user/userSlice';
+import { Conversation } from '@/types';
 import dayjs from 'dayjs';
 
 const allowedExts = [
@@ -139,7 +140,7 @@ export default function MessageInput() {
               mediaUrl: fileUrl,
             })
           );
-          const newConversation = resultAction.payload as any;
+          const newConversation = resultAction.payload as Conversation;
           if (newConversation && newConversation._id) {
             dispatch(setSelectedConversation(newConversation));
             dispatch(setUserSelected(null));
@@ -329,7 +330,7 @@ export default function MessageInput() {
             })
           );
 
-          const newConversation = resultAction.payload as any;
+          const newConversation = resultAction.payload as Conversation;
           if (newConversation && newConversation._id) {
             dispatch(setSelectedConversation(newConversation));
             dispatch(fetchConversations());

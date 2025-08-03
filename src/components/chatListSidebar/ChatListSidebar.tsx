@@ -132,8 +132,8 @@ const ChatListSidebar = React.memo(function ChatListSidebar() {
             email: conversation.receiver.email || '',
             gender: conversation.receiver.gender || '',
             online:
-              typeof (conversation.receiver as any).online === 'boolean'
-                ? (conversation.receiver as any).online
+              typeof (conversation.receiver as UserType).online === 'boolean'
+                ? (conversation.receiver as UserType).online
                 : false,
           };
           dispatch(setUserSelected(receiver));
@@ -152,7 +152,7 @@ const ChatListSidebar = React.memo(function ChatListSidebar() {
       cancelText: 'Huỷ',
       onOk: async () => {
         try {
-          await dispatch<any>(
+          await dispatch(
             deleteConversationForUser({
               conversationId,
               deleteMessages: false, // Chỉ ẩn, không xóa thật

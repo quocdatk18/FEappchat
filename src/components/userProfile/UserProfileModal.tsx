@@ -72,7 +72,7 @@ export default function UserProfileModal({
     const url = data.url;
 
     if (typeof url === 'string') {
-      await dispatch<any>(updateUser({ avatar: url }));
+      await dispatch(updateUser({ avatar: url }));
       message.success('Đổi ảnh đại diện thành công!');
       return { url };
     } else {
@@ -124,7 +124,7 @@ export default function UserProfileModal({
         okText: 'Đồng ý',
         cancelText: 'Hủy',
         onOk: async () => {
-          await dispatch<any>(updateUser({ nickname: values.nickname, gender: values.gender }));
+          await dispatch(updateUser({ nickname: values.nickname, gender: values.gender }));
           message.success('Cập nhật thông tin thành công!');
           if (onSuccess) onSuccess();
         },
