@@ -18,7 +18,10 @@ export const handleLogin = createAsyncThunk(
   'auth/login',
   async (credentials: { username: string; password: string }, thunkAPI) => {
     try {
-      const { data } = await axios.post('/auth/login', credentials);
+      const { data } = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/auth/login`,
+        credentials
+      );
 
       await axios.patch(
         `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/user/${data.user._id}/online`,
@@ -48,7 +51,10 @@ export const handleRegister = createAsyncThunk(
   'auth/register',
   async (credentials: { username: string; password: string }, thunkAPI) => {
     try {
-      const { data } = await axios.post('/auth/register', credentials);
+      const { data } = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/auth/register`,
+        credentials
+      );
       return data; // { token, user }
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string } } };
