@@ -1,6 +1,5 @@
 // redux/conversationSlice.ts
 import axiosClient from '@/api/axiosClient';
-import { useDebounce } from '@/hooks/hookCustoms';
 import { Conversation, ConversationState, UserType } from '@/types';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
@@ -22,7 +21,7 @@ export const fetchConversations = createAsyncThunk<Conversation[], void, { rejec
       const res = await axiosClient.get('/conversations');
 
       const mappedConversations = res.data.map((item: unknown) => {
-        const conversationItem = item as any;
+        const conversationItem = item as Record<string, unknown>;
         return {
           ...conversationItem,
           receiver: conversationItem.isGroup ? undefined : conversationItem.receiver,

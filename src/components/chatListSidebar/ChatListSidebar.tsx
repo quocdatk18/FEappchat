@@ -475,7 +475,7 @@ const ChatListSidebar = React.memo(function ChatListSidebar() {
                           typeof conversation.unreadCount === 'object'
                         ) {
                           // Trường hợp mới: unreadCount là object/map
-                          const unreadCountObj = conversation.unreadCount as any;
+                          const unreadCountObj = conversation.unreadCount as { get?: (key: string) => number } & Record<string, number>;
                           unreadCount =
                             typeof unreadCountObj.get === 'function'
                               ? unreadCountObj.get(userId) || 0

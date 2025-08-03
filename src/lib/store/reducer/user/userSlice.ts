@@ -196,7 +196,7 @@ export const forgotPassword = createAsyncThunk<
 });
 
 export const sendSupportRequest = createAsyncThunk<
-  any,
+  { success: boolean; message: string },
   { subject: string; message: string; userEmail: string; username: string },
   { rejectValue: string }
 >('user/sendSupportRequest', async (supportData, { rejectWithValue }) => {

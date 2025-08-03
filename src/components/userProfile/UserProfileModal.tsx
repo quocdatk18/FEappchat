@@ -141,7 +141,7 @@ export default function UserProfileModal({
       try {
         // Gọi redux thunk đổi mật khẩu ở đây
         const result = await dispatch(
-          // @ts-ignore
+          // @ts-ignore - Dynamic import type issue
           (await import('@/lib/store/reducer/user/userSlice')).changePassword({
             currentPassword: values.currentPassword,
             newPassword: values.newPassword,
@@ -152,7 +152,7 @@ export default function UserProfileModal({
           changePasswordForm.resetFields();
           onClose();
         } else {
-          message.error(result.payload || 'Đổi mật khẩu thất bại!');
+          message.error(typeof result.payload === 'string' ? result.payload : 'Đổi mật khẩu thất bại!');
         }
       } catch (error) {
         message.error('Có lỗi xảy ra, vui lòng thử lại!');

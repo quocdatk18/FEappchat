@@ -1,7 +1,6 @@
 // features/userStatus/userStatusSlice.ts
 
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import axiosClient from '@/api/axiosClient';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface UserStatusState {
   statuses: {
@@ -42,7 +41,7 @@ const userStatusSlice = createSlice({
       state.statuses = {};
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: () => {
     // Không cần extraReducers nữa vì chỉ dùng Socket
   },
 });

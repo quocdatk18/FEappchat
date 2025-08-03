@@ -10,7 +10,7 @@ interface DisabledListItemProps {
   /** Click handler */
   onClick?: (event: React.MouseEvent<HTMLLIElement>) => void;
   /** Các props khác cho thẻ li */
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
