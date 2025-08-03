@@ -8,7 +8,7 @@ interface MessageItemProps {
   msg: Message;
   isMe: boolean;
   currentUser: UserType | null;
-  onAvatarClick?: (user: UserType) => void;
+  onAvatarClick?: (user: UserType | null) => void;
   onRecallMessage: (messageId: string) => void;
   onDeleteMessage: (messageId: string) => void;
   onDeleteMessageForAll?: (messageId: string) => void;

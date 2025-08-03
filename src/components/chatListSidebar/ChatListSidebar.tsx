@@ -375,7 +375,7 @@ const ChatListSidebar = React.memo(function ChatListSidebar() {
                 } else {
                   // 1-1 chat
                   const receiver = item.memberPreviews?.find(
-                    (user: any) => user._id !== currentUser?._id
+                    (user: UserType) => user._id !== currentUser?._id
                   );
                   displayName = receiver ? receiver.nickname || receiver.username : '';
                   displayAvatar = receiver ? receiver.avatar : '/avtDefault.png';
@@ -400,7 +400,7 @@ const ChatListSidebar = React.memo(function ChatListSidebar() {
                       {!item.isGroup &&
                         (() => {
                           const receiver = item.memberPreviews?.find(
-                            (user: any) => user._id !== currentUser?._id
+                            (user: UserType) => user._id !== currentUser?._id
                           );
                           const receiverId = receiver?._id;
                           const isOnline = receiverId ? userStatuses[receiverId]?.isOnline : false;

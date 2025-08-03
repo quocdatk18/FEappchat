@@ -221,7 +221,12 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
       }
       if (user) {
-        state.user = JSON.parse(user);
+        const userData = JSON.parse(user);
+        // Đảm bảo property online được set
+        state.user = {
+          ...userData,
+          online: userData.online ?? true, // Default to true if not set
+        };
       }
       // Set initialized = true sau khi load từ storage
       state.initialized = true;
@@ -243,12 +248,21 @@ const authSlice = createSlice({
       })
       .addCase(handleLogin.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user;
+        state.user = {
+          ...action.payload.user,
+          online: true, // Set online khi login thành công
+        };
         state.token = action.payload.token;
         state.isAuthenticated = true;
         state.isOnline = true;
         localStorage.setItem('token', action.payload.token);
-        localStorage.setItem('user', JSON.stringify(action.payload.user));
+        localStorage.setItem(
+          'user',
+          JSON.stringify({
+            ...action.payload.user,
+            online: true,
+          })
+        );
       })
       .addCase(handleLogin.rejected, (state, action) => {
         state.loading = false;
@@ -277,7 +291,10 @@ const authSlice = createSlice({
       })
       .addCase(checkAuth.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.user = {
+          ...action.payload,
+          online: action.payload.online ?? true, // Default to true if not set
+        };
         state.isAuthenticated = true;
         state.initialized = true;
       })

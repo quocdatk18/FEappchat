@@ -18,7 +18,7 @@ import UserProfileModal from '../userProfile/UserProfileModal';
 import CustomerServiceModal from './CustomerServiceModal';
 import styles from './Sidebar.module.scss';
 
-export default function Sidebar({ onAvatarClick }: { onAvatarClick?: (user: UserType) => void }) {
+export default function Sidebar({ onAvatarClick }: { onAvatarClick?: (user: UserType | null) => void }) {
   const user = useSelector((state: RootState) => state.userReducer.user);
   const dispach = useDispatch<AppDispatch>();
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);

@@ -19,6 +19,7 @@ export interface AuthState {
     gender: Gender;
     avatar: string;
     nickname?: string;
+    online: boolean;
   } | null;
   token: string | null;
   isAuthenticated: boolean;

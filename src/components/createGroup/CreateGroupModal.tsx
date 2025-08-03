@@ -202,7 +202,7 @@ export default function CreateGroupModal({
   });
 
   // Xử lý upload avatar
-  const handleAvatarChange = (info: any) => {
+  const handleAvatarChange = (info: { file: { status: string; response?: { url?: string } } }) => {
     if (info.file.status === 'uploading') {
       // Upload status được handle bởi withUpload
     }
@@ -219,7 +219,11 @@ export default function CreateGroupModal({
     }
   };
 
-  const customRequest = async ({ file, onSuccess, onError }: any) => {
+  const customRequest = async ({ file, onSuccess, onError }: { 
+    file: File; 
+    onSuccess: (data: any, file: File) => void; 
+    onError: (error: any) => void; 
+  }) => {
     try {
       const data = await uploadAvatar(file as File);
       onSuccess(data, file);

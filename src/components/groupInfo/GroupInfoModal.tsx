@@ -96,8 +96,9 @@ export default function GroupInfoModal({ visible, onClose, conversationId }: Gro
           setGroupInfo(result.payload);
         }
       }
-    } catch (error: any) {
-      message.error(error.message || 'Xóa thành viên thất bại');
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      message.error(err.message || 'Xóa thành viên thất bại');
     } finally {
       setRemovingMembers((prev) => prev.filter((id) => id !== memberId));
     }
@@ -147,8 +148,9 @@ export default function GroupInfoModal({ visible, onClose, conversationId }: Gro
           await dispatch(deactivateGroup(conversationId)).unwrap();
           message.success('Đã giải tán nhóm');
           onClose();
-        } catch (error: any) {
-          message.error(error.message || 'Giải tán nhóm thất bại');
+        } catch (error: unknown) {
+          const err = error as { message?: string };
+          message.error(err.message || 'Giải tán nhóm thất bại');
         }
       },
     });

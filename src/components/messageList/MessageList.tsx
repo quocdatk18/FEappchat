@@ -21,7 +21,7 @@ import styles from './MessageList.module.scss';
 export default React.memo(function MessageList({
   onAvatarClick,
 }: {
-  onAvatarClick?: (user: UserType) => void;
+  onAvatarClick?: (user: UserType | null) => void;
 }) {
   const dispatch = useDispatch<AppDispatch>();
   const bottomRef = useRef<HTMLDivElement | null>(null);
