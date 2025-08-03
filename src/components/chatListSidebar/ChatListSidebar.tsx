@@ -12,13 +12,13 @@ import {
   searchConversation,
   setSelectedConversation,
   updateConversationById,
-  updateUnreadCount
+  updateUnreadCount,
 } from '@/lib/store/reducer/conversationSlice/conversationSlice';
 import {
   searchUserByEmail,
   setSelectedUser as setUserSelected,
 } from '@/lib/store/reducer/user/userSlice';
-import { UserType } from '@/types';
+import { UserType, Conversation } from '@/types';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Input, List, Modal, Skeleton, message } from 'antd';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -215,8 +215,14 @@ const ChatListSidebar = React.memo(function ChatListSidebar() {
 
   React.useEffect(() => {
     // Lắng nghe tin nhắn mới để update conversation
-    const handleReceiveMessage = (msg: any) => {
-      if (msg.conversationId && msg.lastMessage) {
+    const handleReceiveMessage = (msg: {
+      conversationId: string;
+      content: string;
+      type?: string;
+      fromUserId: string;
+      createdAt: string;
+    }) => {
+      if (msg.conversationId && msg.content) {
         const oldConv = conversations.find((c) => c._id === msg.conversationId);
         if (!oldConv) return;
 
@@ -238,7 +244,11 @@ const ChatListSidebar = React.memo(function ChatListSidebar() {
       }
     };
     // Lắng nghe cập nhật unreadCount
-    const handleUnreadCountUpdated = (data: any) => {
+    const handleUnreadCountUpdated = (data: {
+      conversationId: string;
+      count: number;
+      userId: string;
+    }) => {
       if (data.conversationId && typeof data.count === 'number') {
         const oldConv = conversations.find((c) => c._id === data.conversationId);
         if (!oldConv) return;
@@ -258,7 +268,7 @@ const ChatListSidebar = React.memo(function ChatListSidebar() {
       }
     };
     // Lắng nghe conversation mới
-    const handleNewConversation = (data: any) => {
+    const handleNewConversation = (data: { conversation: Conversation }) => {
       if (data.conversation && data.conversation._id) {
         dispatch(addConversation(data.conversation));
       }
@@ -328,6 +338,7 @@ const ChatListSidebar = React.memo(function ChatListSidebar() {
             <List
               dataSource={listData}
               renderItem={(item: any) => {
+                // Kiểm tra nếu là user search result
                 if (!item.isGroup && !item.lastMessage && item.username) {
                   return (
                     <List.Item

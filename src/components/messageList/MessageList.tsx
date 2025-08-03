@@ -10,7 +10,7 @@ import {
   recallMessage,
   updateMessage,
 } from '@/lib/store/reducer/message/MessageSlice';
-import {  Message } from '@/types';
+import { Message, UserType } from '@/types';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Modal, Skeleton } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -21,7 +21,7 @@ import styles from './MessageList.module.scss';
 export default React.memo(function MessageList({
   onAvatarClick,
 }: {
-  onAvatarClick?: (user: any) => void;
+  onAvatarClick?: (user: UserType) => void;
 }) {
   const dispatch = useDispatch<AppDispatch>();
   const bottomRef = useRef<HTMLDivElement | null>(null);
@@ -61,7 +61,7 @@ export default React.memo(function MessageList({
   useEffect(() => {
     if (!socket) return;
 
-    const handleMessageRecalled = (data: any) => {
+    const handleMessageRecalled = (data: { conversationId: string; messageId: string }) => {
       if (data.conversationId === selectedConversation?._id) {
         dispatch(
           updateMessage({ _id: data.messageId, recalled: true, recallAt: new Date().toISOString() })
@@ -69,7 +69,11 @@ export default React.memo(function MessageList({
       }
     };
 
-    const handleMessageDeleted = (data: any) => {
+    const handleMessageDeleted = (data: {
+      conversationId: string;
+      messageId: string;
+      userId: string;
+    }) => {
       if (data.conversationId === selectedConversation?._id) {
         // Chỉ ẩn tin nhắn khỏi user đã xóa, không xóa hoàn toàn
         const message = messages.find((m) => m._id === data.messageId);
@@ -85,7 +89,13 @@ export default React.memo(function MessageList({
       }
     };
 
-    const handleMessageDeletedForAll = (data: any) => {
+    const handleMessageDeletedForAll = (data: {
+      conversationId: string;
+      messageId: string;
+      deletedForAll: boolean;
+      deletedForAllAt: string;
+      deletedForAllBy: string;
+    }) => {
       if (data.conversationId === selectedConversation?._id) {
         // Cập nhật tin nhắn thành đã xóa cho tất cả
         dispatch(

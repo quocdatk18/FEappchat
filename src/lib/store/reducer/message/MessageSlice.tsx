@@ -20,11 +20,12 @@ export const fetchMessages = createAsyncThunk<
       timeout: 15000,
     });
     return { conversationId, messages: res.data };
-  } catch (error: any) {
-    if (error.code === 'ECONNABORTED')
+  } catch (error: unknown) {
+    const err = error as { code?: string; response?: { data?: { message?: string } } };
+    if (err.code === 'ECONNABORTED')
       return thunkAPI.rejectWithValue('Kết nối mạng chậm, vui lòng thử lại');
     if (!navigator.onLine) return thunkAPI.rejectWithValue('Không có kết nối mạng');
-    return thunkAPI.rejectWithValue(error.response?.data?.message || 'Không thể tải tin nhắn');
+    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Không thể tải tin nhắn');
   }
 });
 
@@ -40,12 +41,13 @@ export const sendMessage = createAsyncThunk<Message, Partial<Message>, { rejectV
         timeout: 20000,
       });
       return response.data as Message;
-    } catch (error: any) {
-      if (error.code === 'ECONNABORTED')
+    } catch (error: unknown) {
+      const err = error as { code?: string; response?: { data?: { message?: string } } };
+      if (err.code === 'ECONNABORTED')
         return rejectWithValue('Kết nối mạng chậm, tin nhắn sẽ được gửi khi mạng ổn định');
       if (!navigator.onLine)
         return rejectWithValue('Không có kết nối mạng, tin nhắn sẽ được gửi khi có mạng');
-      return rejectWithValue(error.response?.data?.message || 'Không gửi được tin nhắn');
+      return rejectWithValue(err.response?.data?.message || 'Không gửi được tin nhắn');
     }
   }
 );
@@ -58,8 +60,9 @@ export const deleteMessageForUser = createAsyncThunk<string, string, { rejectVal
     try {
       await axiosClient.patch(`/messages/${messageId}/delete`);
       return messageId;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to delete message');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      return rejectWithValue(err.response?.data?.message || 'Failed to delete message');
     }
   }
 );
@@ -71,9 +74,10 @@ export const deleteMessageForAll = createAsyncThunk<string, string, { rejectValu
     try {
       await axiosClient.delete(`/messages/${messageId}/delete-for-all`);
       return messageId;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
       return rejectWithValue(
-        error.response?.data?.message || 'Failed to delete message for all users'
+        err.response?.data?.message || 'Failed to delete message for all users'
       );
     }
   }
@@ -88,8 +92,9 @@ export const recallMessage = createAsyncThunk<
   try {
     const response = await axiosClient.patch(`/messages/${messageId}/recall`);
     return response.data;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || 'Failed to recall message');
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: { message?: string } } };
+    return rejectWithValue(err.response?.data?.message || 'Failed to recall message');
   }
 });
 
@@ -102,8 +107,9 @@ export const markMessageSeen = createAsyncThunk<
   try {
     await axiosClient.patch(`/messages/${messageId}/seen`);
     return { messageId, userId };
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || 'Failed to mark message as seen');
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: { message?: string } } };
+    return rejectWithValue(err.response?.data?.message || 'Failed to mark message as seen');
   }
 });
 

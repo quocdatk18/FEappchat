@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/lib/store';
 import { Modal as AntdModal } from 'antd';
-import {  useLoading } from '@/components/common';
+import { useLoading } from '@/components/common';
 import {
   createConversation,
   setSelectedConversation,
@@ -136,27 +136,29 @@ export default function UserProfileModal({
 
   // Thêm form đổi mật khẩu
   const { withLoading: withChangePassword } = useLoading();
-  const handleChangePassword = withChangePassword(async (values: any) => {
-    try {
-      // Gọi redux thunk đổi mật khẩu ở đây
-      const result = await dispatch(
-        // @ts-ignore
-        require('@/lib/store/reducer/user/userSlice').changePassword({
-          currentPassword: values.currentPassword,
-          newPassword: values.newPassword,
-        })
-      );
-      if (result.meta.requestStatus === 'fulfilled') {
-        message.success('Đổi mật khẩu thành công!');
-        changePasswordForm.resetFields();
-        onClose();
-      } else {
-        message.error(result.payload || 'Đổi mật khẩu thất bại!');
+  const handleChangePassword = withChangePassword(
+    async (values: { currentPassword: string; newPassword: string }) => {
+      try {
+        // Gọi redux thunk đổi mật khẩu ở đây
+        const result = await dispatch(
+          // @ts-ignore
+          require('@/lib/store/reducer/user/userSlice').changePassword({
+            currentPassword: values.currentPassword,
+            newPassword: values.newPassword,
+          })
+        );
+        if (result.meta.requestStatus === 'fulfilled') {
+          message.success('Đổi mật khẩu thành công!');
+          changePasswordForm.resetFields();
+          onClose();
+        } else {
+          message.error(result.payload || 'Đổi mật khẩu thất bại!');
+        }
+      } catch (error) {
+        message.error('Có lỗi xảy ra, vui lòng thử lại!');
       }
-    } catch (error) {
-      message.error('Có lỗi xảy ra, vui lòng thử lại!');
     }
-  });
+  );
 
   // Hàm xử lý nút nhắn tin
   const handleMessageUser = async () => {

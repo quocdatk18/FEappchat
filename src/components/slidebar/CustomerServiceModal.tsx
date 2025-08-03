@@ -20,34 +20,36 @@ export default function CustomerServiceModal({ open, onClose }: CustomerServiceM
   const [form] = Form.useForm();
   const { loading, withLoading } = useLoading();
 
-  const handleSubmitSupport = withLoading(async (values: any) => {
-    try {
-      const result = await dispatch(
-        sendSupportRequest({
-          subject: values.subject,
-          message: values.message,
-          userEmail: values.userEmail,
-          username: user?.username || '',
-        })
-      );
+  const handleSubmitSupport = withLoading(
+    async (values: { subject: string; message: string; userEmail: string }) => {
+      try {
+        const result = await dispatch(
+          sendSupportRequest({
+            subject: values.subject,
+            message: values.message,
+            userEmail: values.userEmail,
+            username: user?.username || '',
+          })
+        );
 
-      if (sendSupportRequest.fulfilled.match(result)) {
-        notification.success({
-          message: 'Yêu cầu hỗ trợ đã được gửi!',
-          description: 'Chúng tôi sẽ phản hồi trong thời gian sớm nhất.',
-        });
-        form.resetFields();
-        onClose();
-      } else {
-        notification.error({
-          message: 'Thất bại',
-          description: result.payload || 'Không thể gửi yêu cầu hỗ trợ, vui lòng thử lại!',
-        });
+        if (sendSupportRequest.fulfilled.match(result)) {
+          notification.success({
+            message: 'Yêu cầu hỗ trợ đã được gửi!',
+            description: 'Chúng tôi sẽ phản hồi trong thời gian sớm nhất.',
+          });
+          form.resetFields();
+          onClose();
+        } else {
+          notification.error({
+            message: 'Thất bại',
+            description: result.payload || 'Không thể gửi yêu cầu hỗ trợ, vui lòng thử lại!',
+          });
+        }
+      } catch (error) {
+        message.error('Có lỗi xảy ra, vui lòng thử lại!');
       }
-    } catch (error) {
-      message.error('Có lỗi xảy ra, vui lòng thử lại!');
     }
-  });
+  );
 
   return (
     <Modal

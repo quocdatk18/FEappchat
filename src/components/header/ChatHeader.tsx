@@ -1,6 +1,7 @@
 import LastSeenDisplay from '@/lib/format';
 import { AppDispatch, RootState } from '@/lib/store';
 import { getUserById } from '@/lib/store/reducer/user/userSlice';
+import { UserType } from '@/types';
 
 import { ArrowLeftOutlined, PhoneOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { Avatar, Button, notification } from 'antd';
@@ -14,7 +15,7 @@ export default function ChatHeader({
   onAvatarClick,
   onBackClick,
 }: {
-  onAvatarClick?: (user: any) => void;
+  onAvatarClick?: (user: UserType | null) => void;
   onBackClick?: () => void;
 }) {
   const dispatch = useDispatch<AppDispatch>();
@@ -106,7 +107,7 @@ export default function ChatHeader({
                       message: 'Nhóm đã giải tán từ ' + formatDate(deactivatedAt),
                     })
                   : setShowGroupInfoModal(true);
-              } else if (onAvatarClick && displayUser) {
+              } else if (onAvatarClick && displayUser && displayUser._id) {
                 // Fetch đầy đủ thông tin user trước khi mở profile
                 try {
                   const result = await dispatch(getUserById(displayUser._id));

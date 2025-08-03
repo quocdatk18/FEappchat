@@ -1,14 +1,14 @@
 import React, { useMemo } from 'react';
 import { Button, Dropdown, Image } from 'antd';
 import { DeleteOutlined, MoreOutlined, RollbackOutlined } from '@ant-design/icons';
-import { Message, Conversation } from '@/types';
+import { Message, Conversation, UserType } from '@/types';
 import styles from './MessageList.module.scss';
 
 interface MessageItemProps {
   msg: Message;
   isMe: boolean;
-  currentUser: any;
-  onAvatarClick?: (user: any) => void;
+  currentUser: UserType | null;
+  onAvatarClick?: (user: UserType) => void;
   onRecallMessage: (messageId: string) => void;
   onDeleteMessage: (messageId: string) => void;
   onDeleteMessageForAll?: (messageId: string) => void;

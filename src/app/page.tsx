@@ -7,21 +7,22 @@ import MessageInput from '@/components/messageInput/MessageInput';
 import MessageList from '@/components/messageList/MessageList';
 import Sidebar from '@/components/slidebar/Sidebar';
 import UserProfileModal from '@/components/userProfile/UserProfileModal';
-import { checkAuth, loadUserFromStorage } from '@/lib/store/reducer/user/userSlice';
 import {
-  updateUnreadCount,
-  addConversation,
   fetchConversations,
   setSelectedConversation,
 } from '@/lib/store/reducer/conversationSlice/conversationSlice';
-import { setSelectedUser } from '@/lib/store/reducer/user/userSlice';
+import {
+  checkAuth,
+  loadUserFromStorage,
+  setSelectedUser,
+} from '@/lib/store/reducer/user/userSlice';
+import { Gender, UserType } from '@/types';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '../lib/store/index';
 import styles from './ChatLayout.module.scss';
 import './globals.css';
-import { UserType, Gender } from '@/types';
 
 export default function Home() {
   const dispatch = useDispatch<AppDispatch>();
@@ -59,10 +60,10 @@ export default function Home() {
       dispatch(fetchConversations());
 
       // Lắng nghe conversation mới
-      const handleNewConversation = (data: any) => {
+      const handleNewConversation = (data: { conversation: { members: string[] } }) => {
         if (data.conversation && user?._id) {
           const isMember = data.conversation.members.some(
-            (memberId: any) => memberId.toString() === user._id
+            (memberId: string) => memberId.toString() === user._id
           );
           if (isMember) {
             dispatch(fetchConversations());
@@ -92,11 +93,11 @@ export default function Home() {
     if (!user?._id) return;
 
     // Listener cho conversation mới được tạo
-    const handleNewConversation = (data: any) => {
+    const handleNewConversation = (data: { conversation: { members: string[] } }) => {
       if (data.conversation && user?._id) {
         // Kiểm tra nếu user hiện tại là thành viên của conversation mới
         const isMember = data.conversation.members.some(
-          (memberId: any) => memberId.toString() === user._id
+          (memberId: string) => memberId.toString() === user._id
         );
 
         if (isMember) {
@@ -113,7 +114,8 @@ export default function Home() {
     };
   }, [user?._id, dispatch]);
 
-  const handleAvatarClick = (user: UserType) => {
+  const handleAvatarClick = (user: UserType | null) => {
+    if (!user) return;
     setProfileUser(user);
     setShowProfileModal(true);
   };

@@ -64,7 +64,7 @@ export default function AuthForm({ mode }: Props) {
   });
 
   // Xử lý quên mật khẩu
-  const handleForgotPassword = withForgotPassword(async (values: any) => {
+  const handleForgotPassword = withForgotPassword(async (values: { email: string }) => {
     try {
       const result = await dispatch(forgotPassword({ email: values.email }));
       if (forgotPassword.fulfilled.match(result)) {
@@ -88,7 +88,7 @@ export default function AuthForm({ mode }: Props) {
     }
   });
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: FieldType) => {
     if (checkLogin) {
       const result = await dispatch(handleLogin(values));
       if (handleLogin.fulfilled.match(result)) {
