@@ -1,0 +1,86 @@
+.onboardingContainer {
+  flex: 1;
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+
+  :global(.ant-carousel) {
+    height: 100%;
+  }
+
+  :global(.ant-carousel .slick-list),
+  :global(.ant-carousel .slick-track),
+  :global(.ant-carousel .slick-slide) {
+    height: 100%;
+  }
+
+  :global(.ant-carousel .slick-dots) {
+    bottom: 12%;
+    li button {
+      background: rgba(255, 255, 255, 0.7);
+    }
+    li.slick-active button {
+      background: #fff;
+      width: 24px;
+      border-radius: 8px;
+    }
+  }
+}
+
+.onboardingSlider {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
+}
+
+.onboardingContent {
+  position: absolute;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  color: #fff;
+  padding: 0 20px;
+  z-index: 2;
+
+  .title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 12px;
+  }
+
+  .desc {
+    font-size: 1.2rem;
+    opacity: 0.9;
+  }
+}
+
+.actions {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  z-index: 2;
+
+  button {
+    width: 30%;
+    height: 48px;
+    font-size: 1.2rem;
+    border-radius: 8px;
+  }
+}

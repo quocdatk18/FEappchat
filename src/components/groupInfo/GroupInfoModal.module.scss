@@ -1,0 +1,58 @@
+.groupInfoModal {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .groupHeader {
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .adminActions {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .membersListWrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 12px 16px;
+
+    h4 {
+      margin-bottom: 8px;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .scrollableList {
+      flex: 1;
+      max-height: 50vh;
+      overflow-y: auto;
+      border-radius: 8px;
+      scroll-behavior: smooth;
+
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      .ant-list-item {
+        padding: 8px 12px;
+        transition: background 0.2s;
+        &:hover {
+          background: #fafafa;
+        }
+      }
+    }
+  }
+
+  .deleteGroupSection {
+    padding: 12px 16px;
+    border-top: 1px solid #f0f0f0;
+  }
+}

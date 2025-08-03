@@ -1,0 +1,130 @@
+// ===== Message Input Layout =====
+.chatInput {
+  width: 100%;
+  background: transparent;
+
+  // ===== Form Wrapper =====
+  .chatForm {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 12px;
+    border-top: 1px solid #e5e7eb;
+    background-color: #ffffff;
+    gap: 4px;
+
+    // ===== Action Buttons Row =====
+    .actions {
+      display: flex;
+      gap: 10px;
+      button {
+        font-size: 18px;
+        color: #4b5563;
+        padding: 6px;
+        border-radius: 6px;
+        transition: background-color 0.2s;
+        &:hover {
+          background-color: #f3f4f6;
+        }
+      }
+    }
+
+    // ===== Input Form =====
+    .chatInputForm {
+      width: 100%;
+    }
+    .inputGroup {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      .inputWrapper {
+        flex: 1;
+        margin-bottom: 0;
+        .ant-form-item-control {
+          line-height: normal;
+        }
+      }
+    }
+    .inputWrapper {
+      margin-bottom: 0;
+      .ant-form-item-control {
+        line-height: normal;
+      }
+    }
+    // ===== Textarea/Input =====
+    .input {
+      width: 100%;
+      outline: none;
+      // border: 1px solid #ccc;
+      padding: 8px;
+      transition: all 0.3s ease;
+      &:focus {
+        border: none;
+        transform: translateY(5px);
+        border-color: #666;
+      }
+    }
+    // ===== Send Button =====
+    .sendButton {
+      font-size: 22px;
+      color: #0ea5e9;
+      padding: 6px 10px;
+      border-radius: 50%;
+      transition: background-color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      &:hover {
+        background-color: #e0f2fe;
+      }
+      &:disabled {
+        color: #9ca3af;
+        cursor: not-allowed;
+        background-color: transparent;
+      }
+    }
+    // ===== Image Preview & Delete =====
+    .previewWrapper {
+      position: relative;
+      display: inline-block;
+      &:hover .deleteIcon {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+    .deleteIcon {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 2;
+      cursor: pointer;
+      border: none;
+      padding: 2px;
+      font-size: 16px;
+      color: #ff4d4f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    // ===== Progress Bar (Upload) =====
+    .progressWrapper {
+      width: 200px;
+      height: 16px;
+      background: #eee;
+      border-radius: 8px;
+      margin: 8px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .progressBar {
+      height: 100%;
+      background: #1890ff;
+      transition: width 0.2s;
+    }
+  }
+}

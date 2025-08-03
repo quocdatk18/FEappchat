@@ -1,0 +1,369 @@
+// ===== Message List Layout =====
+.messageList {
+  flex: 1 1 0;
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  margin: 20px 10px;
+  gap: 12px;
+  position: relative;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  // ===== Message Wrapper (Me/Other) =====
+  .messageWrapper {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    position: relative;
+    max-width: 100%;
+
+    &.me {
+      flex-direction: row-reverse;
+      margin-right: 10px;
+      .message {
+        .messageList {
+          padding: 12px;
+          height: 100%;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+
+          // Ẩn scrollbar nhưng vẫn cuộn
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+          &::-webkit-scrollbar {
+            display: none;
+          }
+        }
+
+        .messageWrapper {
+          display: flex;
+          align-items: flex-end;
+          gap: 8px;
+          position: relative;
+          transition: all 0.2s ease;
+
+          &.me {
+            flex-direction: row-reverse;
+
+            .message {
+              background: #e6f7ff;
+              border-radius: 12px 0 12px 12px;
+              align-items: flex-end;
+            }
+          }
+
+          &.other {
+            .message {
+              background: #f5f5f5;
+              border-radius: 0 12px 12px 12px;
+            }
+          }
+
+          // Ẩn avatar + dính tin nhắn liên tiếp
+          & + &.me {
+            margin-top: -2px;
+          }
+          & + &.other {
+            margin-top: -2px;
+          }
+
+          &:hover .messageActions {
+            opacity: 1;
+            visibility: visible;
+          }
+        }
+
+        .avatar {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          object-fit: cover;
+          cursor: pointer;
+        }
+
+        .message {
+          max-width: 70%;
+          padding: 8px 12px;
+          font-size: 15px;
+          line-height: 1.4;
+          word-break: break-word;
+          position: relative;
+          transition:
+            background 0.2s ease,
+            transform 0.2s ease;
+
+          // Animation khi thu hồi/xóa
+          &.updated {
+            background: #f0f0f0 !important;
+            transform: scale(0.98);
+          }
+        }
+
+        .senderName {
+          font-size: 12px;
+          font-weight: 500;
+          color: #888;
+          margin-bottom: 4px;
+        }
+
+        .content {
+          white-space: pre-line;
+        }
+
+        .recalledMessage,
+        .deletedMessage {
+          font-style: italic;
+          font-size: 14px;
+          display: block;
+          color: #999;
+        }
+
+        .deletedMessage {
+          color: #bfbfbf;
+        }
+
+        .fileBox {
+          background: #fafafa;
+          border: 1px solid #ddd;
+          padding: 6px;
+          border-radius: 8px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .fileIcon {
+          font-size: 12px;
+          font-weight: bold;
+          padding: 4px 6px;
+          background: #e6f7ff;
+          border-radius: 4px;
+        }
+
+        .fileName {
+          font-size: 13px;
+          font-weight: 500;
+        }
+
+        .downloadBtn {
+          font-size: 18px;
+          text-decoration: none;
+        }
+
+        .time {
+          font-size: 11px;
+          color: #888;
+          margin-top: 2px;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          justify-content: flex-end;
+        }
+
+        .seen {
+          font-size: 11px;
+          color: #1890ff;
+          display: flex;
+          align-items: center;
+          gap: 2px;
+        }
+
+        .messageActions {
+          opacity: 0;
+          visibility: hidden;
+          position: absolute;
+          top: 0;
+          right: -24px;
+          transition: all 0.2s ease;
+          background: transparent;
+        }
+
+        background-color: #e5f1ff;
+        border-top-right-radius: 0;
+      }
+    }
+    &.other {
+      margin-left: 18px;
+      .message {
+        background-color: #ffffff;
+        border-top-left-radius: 0;
+      }
+    }
+    // ===== Avatar =====
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      cursor: pointer;
+    }
+    // ===== Message Bubble =====
+    .message {
+      max-width: 60%;
+      min-width: 10%;
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      word-wrap: break-word;
+      font-size: 14px;
+      line-height: 1.4;
+      border-radius: 20px;
+      overflow: hidden;
+
+      // ===== Sender Name (Group Chat) =====
+      .senderName {
+        font-size: 12px;
+        font-weight: 600;
+        color: #1890ff;
+        margin-bottom: 4px;
+        line-height: 1.2;
+      }
+      .message img {
+        max-width: 220px;
+        border-radius: 8px;
+        margin-bottom: 4px;
+        display: block;
+      }
+      // ===== File Box (Attachment) =====
+      .fileBox {
+        background: #f5f7fa;
+        border-radius: 12px;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 220px;
+        max-width: 320px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        .fileInfo {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex: 1;
+          .fileIcon {
+            width: 40px;
+            height: 40px;
+            background: #e5eaf3;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            color: #1890ff;
+          }
+          .fileMeta {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            .fileName {
+              font-weight: 500;
+              color: #222;
+              font-size: 15px;
+              word-break: break-all;
+            }
+          }
+        }
+        .downloadBtn {
+          font-size: 20px;
+          color: #1890ff;
+          margin-left: 8px;
+          text-decoration: none;
+          transition: color 0.2s;
+          &:hover {
+            color: #0056b3;
+          }
+        }
+      }
+      // ===== Nội dung và thời gian =====
+      .content {
+        white-space: pre-line;
+        padding: 10px;
+      }
+      .time {
+        font-size: 11px;
+        color: #6b7280;
+        margin-top: 4px;
+        align-self: flex-end;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        .seen {
+          display: inline-flex;
+          align-items: center;
+          background: #e5eaf3;
+          color: #1890ff;
+          border-radius: 12px;
+          font-size: 12px;
+          font-weight: 500;
+          padding: 0 10px 0 6px;
+          margin-left: 4px;
+          height: 22px;
+          box-shadow: 0 1px 4px rgba(24, 144, 255, 0.06);
+          svg {
+            margin-right: 4px;
+            font-size: 15px;
+          }
+        }
+      }
+      img,
+      .ant-image-img {
+        transition:
+          box-shadow 0.2s,
+          transform 0.2s,
+          border 0.2s;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border: 2px solid transparent;
+        cursor: pointer;
+      }
+      img:hover,
+      .ant-image-img:hover {
+        box-shadow: 0 4px 24px rgba(24, 144, 255, 0.18);
+        border: 2px solid #1890ff;
+        transform: scale(1.03);
+        z-index: 2;
+      }
+    }
+  }
+}
+
+.messageWrapper {
+  &:hover {
+    .messageActions {
+      opacity: 1;
+    }
+  }
+}
+
+.messageActions {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  margin-left: 8px;
+  padding: 4px;
+  height: auto;
+  min-width: 24px;
+  position: relative;
+  z-index: 10;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+}
+
+.recalledMessage {
+  color: #999;
+  font-style: italic;
+  font-size: 14px;
+}

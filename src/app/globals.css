@@ -1,0 +1,115 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Open Sans', sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+li {
+  list-style-type: none;
+}
+
+/* ===== Disabled li styles ===== */
+li.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  user-select: none;
+}
+
+li.disabled:hover {
+  background-color: transparent !important;
+  color: inherit !important;
+}
+
+li.disabled * {
+  pointer-events: none;
+}
+
+.ant-input,
+.ant-input-textarea,
+.ant-input-textarea textarea {
+  resize: none !important;
+}
+
+:global(.ant-list-item) {
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+}
+:global(.ant-list) {
+  gap: 0 !important;
+}
+
+:global(.ant-modal-wrap) {
+  overflow: hidden !important;
+}
+
+/* ===== Ant Design Dropdown Menu Custom (Zalo style) ===== */
+.ant-dropdown-menu {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12) !important;
+  min-width: 180px !important;
+  padding: 8px 0 !important;
+  font-size: 16px;
+}
+.ant-dropdown-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px !important;
+  border-radius: 8px !important;
+  transition: background 0.18s;
+}
+.ant-dropdown-menu-item:hover {
+  background: #f5f6fa !important;
+  color: #0084ff !important;
+}
+
+/* Đảm bảo dropdown nổi trên sidebar */
+.ant-dropdown {
+  z-index: 2000 !important;
+}
+.ant-dropdown-menu {
+  z-index: 2001 !important;
+}
+
+/* ===== Online/Offline Status Indicator ===== */
+.online-status {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  transition: all 0.2s ease;
+}
+
+.online-status.online {
+  background-color: #52c41a;
+}
+
+.online-status.offline {
+  background-color: #d9d9d9;
+}
+
+/* Small size (12px) - for sidebar */
+.online-status.small {
+  width: 12px;
+  height: 12px;
+  bottom: 2px;
+  right: 2px;
+}
+
+/* Medium size (14px) - for header */
+.online-status.medium {
+  width: 14px;
+  height: 14px;
+  bottom: 2px;
+  right: 2px;
+}
