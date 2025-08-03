@@ -45,7 +45,7 @@ export default function CustomerServiceModal({ open, onClose }: CustomerServiceM
             description: result.payload || 'Không thể gửi yêu cầu hỗ trợ, vui lòng thử lại!',
           });
         }
-      } catch (error) {
+      } catch {
         message.error('Có lỗi xảy ra, vui lòng thử lại!');
       }
     }

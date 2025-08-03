@@ -27,7 +27,7 @@ import './globals.css';
 export default function Home() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-  const { isAuthenticated, loading, user, initialized } = useSelector(
+  const { isAuthenticated, user, initialized } = useSelector(
     (state: RootState) => state.userReducer
   );
 
@@ -36,7 +36,6 @@ export default function Home() {
     (state: RootState) => state.conversationReducer.selectedConversation
   );
 
-  const [currentOpenConversationId, setCurrentOpenConversationId] = useState<string | null>(null);
   useEffect(() => {
     const token = localStorage.getItem('token');
     const user = localStorage.getItem('user');
@@ -83,11 +82,6 @@ export default function Home() {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileUser, setProfileUser] = useState<UserType | null>(null);
   const currentUser = user;
-
-  // Cập nhật currentOpenConversationId khi selectedConversation thay đổi
-  useEffect(() => {
-    setCurrentOpenConversationId(selectedConversation?._id || null);
-  }, [selectedConversation?._id]);
 
   useEffect(() => {
     if (!user?._id) return;

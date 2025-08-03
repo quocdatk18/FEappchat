@@ -63,23 +63,6 @@ export default function MessageInput() {
   const currentUser = useSelector((state: RootState) => state.userReducer.user);
   const selectedUser = useSelector((state: RootState) => state.userReducer.selectedUser);
 
-  // Xác định placeholder text
-  const getPlaceholderText = () => {
-    if (selectedConversation) {
-      if (selectedConversation.isGroup) {
-        return `Nhập tin nhắn cho nhóm ${selectedConversation.name || ''}...`;
-      } else {
-        const receiver = selectedConversation.receiver;
-        const receiverName = receiver?.nickname || receiver?.username || '';
-        return `Nhập tin nhắn cho ${receiverName}...`;
-      }
-    } else if (selectedUser) {
-      const userName = selectedUser.nickname || selectedUser.username || '';
-      return `Nhập tin nhắn cho ${userName}...`;
-    }
-    return 'Chọn một cuộc trò chuyện để bắt đầu nhắn tin...';
-  };
-
   const sendMessageToConversation = (
     conversationId: string,
     receiverId: string,
@@ -147,8 +130,8 @@ export default function MessageInput() {
             // Không cần gửi lại vì message đã được tạo trong createConversation
           }
           return true;
-        } catch (err) {
-          console.error('Lỗi tạo conversation:', err);
+        } catch (error: unknown) {
+          console.error('Lỗi tạo conversation:', error);
           return false;
         }
       }
@@ -251,7 +234,7 @@ export default function MessageInput() {
         onOk: async () => {
           try {
             await uploadAndSendFile(file, 'file');
-          } catch (err) {
+          } catch (error: unknown) {
             message.error('Hiện tại chúng tôi chưa phát triển cho loại file này!');
           }
         },
@@ -263,7 +246,7 @@ export default function MessageInput() {
     const isVideo = file.type.startsWith('video/');
     try {
       await uploadAndSendFile(file, isVideo ? 'video' : 'file');
-    } catch (err) {
+    } catch (error: unknown) {
       message.error('File không được hỗ trợ!');
     }
     return false;

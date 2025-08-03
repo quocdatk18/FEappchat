@@ -57,7 +57,7 @@ export default function AuthForm({ mode }: Props) {
   }, [initialized, isAuthenticated, router]);
 
   // Sử dụng skeleton loading hook
-  const { showSkeleton, handleRetry, hasError, errorMessage } = useSkeletonLoading({
+  const { showSkeleton } = useSkeletonLoading({
     loading,
     error,
     retryFn: () => {}, // Auth không cần retry

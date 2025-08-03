@@ -8,7 +8,6 @@ import { RootState, AppDispatch } from '@/lib/store';
 import { Modal as AntdModal } from 'antd';
 import { useLoading } from '@/components/common';
 import {
-  createConversation,
   setSelectedConversation,
   setSelectedUser,
 } from '@/lib/store/reducer/conversationSlice/conversationSlice';
@@ -48,7 +47,6 @@ export default function UserProfileModal({
   const reduxUser = useSelector((state: RootState) => state.userReducer.user);
   const displayUser = isCurrentUser ? reduxUser : user;
   const conversations = useSelector((state: RootState) => state.conversationReducer.conversations);
-  const selectedUser = useSelector((state: RootState) => state.conversationReducer.selectedUser);
 
   useEffect(() => {
     if (open && displayUser && mode === 'profile') {
@@ -80,6 +78,7 @@ export default function UserProfileModal({
     }
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleAvatarChange = async (info: any) => {
     if (info.file.status === 'uploading') {
       // Upload status được handle bởi withUpload
@@ -98,6 +97,7 @@ export default function UserProfileModal({
   };
 
   // Custom upload handler
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const customRequest = async ({ file, onSuccess, onError }: any) => {
     try {
       const data = await uploadAvatar(file as File);
@@ -129,7 +129,7 @@ export default function UserProfileModal({
           if (onSuccess) onSuccess();
         },
       });
-    } catch (err) {
+    } catch (error: unknown) {
       message.error('Cập nhật thông tin thất bại!');
     }
   };
@@ -141,7 +141,6 @@ export default function UserProfileModal({
       try {
         // Gọi redux thunk đổi mật khẩu ở đây
         const result = await dispatch(
-          // @ts-ignore - Dynamic import type issue
           (await import('@/lib/store/reducer/user/userSlice')).changePassword({
             currentPassword: values.currentPassword,
             newPassword: values.newPassword,
@@ -152,9 +151,11 @@ export default function UserProfileModal({
           changePasswordForm.resetFields();
           onClose();
         } else {
-          message.error(typeof result.payload === 'string' ? result.payload : 'Đổi mật khẩu thất bại!');
+          message.error(
+            typeof result.payload === 'string' ? result.payload : 'Đổi mật khẩu thất bại!'
+          );
         }
-      } catch (error) {
+      } catch (error: unknown) {
         message.error('Có lỗi xảy ra, vui lòng thử lại!');
       }
     }
@@ -205,7 +206,7 @@ export default function UserProfileModal({
         }
         message.success('Đã mở cuộc trò chuyện!');
       }, 100);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('handleMessageUser error', error);
       message.error('Không thể tạo cuộc trò chuyện!');
     }

@@ -108,7 +108,6 @@ const MessageItem = React.memo(
     const messageActions = useMemo(() => {
       const items = [];
       const isMyMessage = msg.senderId?._id === currentUser?._id;
-      const isAdmin = conversation?.createdBy === currentUser?._id;
 
       if (canRecallMessage) {
         items.push({

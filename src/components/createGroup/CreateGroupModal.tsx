@@ -39,7 +39,7 @@ export default function CreateGroupModal({
 
   // Sử dụng useLoading hooks
   const { loading, withLoading } = useLoading();
-  const { loading: uploading, withLoading: withUpload } = useLoading();
+  const { withLoading: withUpload } = useLoading();
   const { loading: isSearching, withLoading: withSearch } = useLoading();
 
   // Lấy danh sách user từ conversations (đã chat trước đó)
@@ -202,7 +202,8 @@ export default function CreateGroupModal({
   });
 
   // Xử lý upload avatar
-  const handleAvatarChange = (info: { file: { status: string; response?: { url?: string } } }) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleAvatarChange = (info: any) => {
     if (info.file.status === 'uploading') {
       // Upload status được handle bởi withUpload
     }
@@ -219,15 +220,8 @@ export default function CreateGroupModal({
     }
   };
 
-  const customRequest = async ({
-    file,
-    onSuccess,
-    onError,
-  }: {
-    file: File;
-    onSuccess: (data: unknown, file: File) => void;
-    onError: (error: unknown) => void;
-  }) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const customRequest = async ({ file, onSuccess, onError }: any) => {
     try {
       const data = await uploadAvatar(file as File);
       onSuccess(data, file);

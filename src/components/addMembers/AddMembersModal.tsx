@@ -41,7 +41,7 @@ export default function AddMembersModal({
       if (onSuccess) {
         onSuccess();
       }
-    } catch (error) {
+    } catch {
       message.error('Thêm thành viên thất bại!');
     }
   };

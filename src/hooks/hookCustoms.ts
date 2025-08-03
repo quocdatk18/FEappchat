@@ -150,6 +150,7 @@ export const useSocketListener = () => {
  * @param delay - Thời gian delay (ms)
  * @returns Function đã được debounce
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useDebounce<T extends (...args: any[]) => void>(callback: T, delay: number) {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 

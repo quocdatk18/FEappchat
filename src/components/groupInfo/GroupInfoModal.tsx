@@ -7,7 +7,7 @@ import {
   removeMembersFromGroup,
   updateGroup,
 } from '@/lib/store/reducer/conversationSlice/conversationSlice';
-import { Gender, UserType } from '@/types';
+import { Gender, UserType, Conversation } from '@/types';
 import {
   CameraOutlined,
   CrownOutlined,
@@ -42,7 +42,7 @@ export default function GroupInfoModal({ visible, onClose, conversationId }: Gro
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileUser, setProfileUser] = useState<UserType | null>(null);
 
-  const { loading: uploading, withLoading: withUpload } = useLoading();
+  const { withLoading: withUpload } = useLoading();
   const { loading: deletingGroup, withLoading: withDeleteGroup } = useLoading();
 
   const fetchGroupInfo = useCallback(async () => {
@@ -51,7 +51,7 @@ export default function GroupInfoModal({ visible, onClose, conversationId }: Gro
       const result = await dispatch(getGroupInfo(conversationId));
       if (getGroupInfo.fulfilled.match(result)) {
         if (result.payload.members) {
-          setGroupMembers(result.payload.members);
+          setGroupMembers(result.payload.members as unknown as UserType[]);
           setGroupInfo(result.payload);
         }
       } else if (getGroupInfo.rejected.match(result)) {
@@ -92,7 +92,7 @@ export default function GroupInfoModal({ visible, onClose, conversationId }: Gro
       const result = await dispatch(getGroupInfo(conversationId));
       if (getGroupInfo.fulfilled.match(result)) {
         if (result.payload.members) {
-          setGroupMembers(result.payload.members);
+          setGroupMembers(result.payload.members as unknown as UserType[]);
           setGroupInfo(result.payload);
         }
       }

@@ -13,6 +13,7 @@ interface UseLoadingReturn {
    * T: Array của parameters của async function
    * R: Return type của async function
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   withLoading: <T extends any[], R>(
     asyncFn: (...args: T) => Promise<R>
   ) => (...args: T) => Promise<R>;
@@ -45,6 +46,7 @@ export const useLoading = (initialState = false): UseLoadingReturn => {
    * Ví dụ: withLoading<[string, number], string>(async (name, age) => { return "result"; })
    */
   const withLoading = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     <T extends any[], R>(asyncFn: (...args: T) => Promise<R>) =>
       async (...args: T): Promise<R> => {
         try {

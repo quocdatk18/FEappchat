@@ -36,8 +36,6 @@ const NetworkLoading: React.FC<NetworkLoadingProps> = ({
   }
 
   if (error) {
-    const isNetworkError = error.includes('mạng') || error.includes('kết nối');
-
     return (
       <div
         style={{

@@ -78,7 +78,6 @@ export const searchUserByEmail = createAsyncThunk<UserType | null, string, { rej
   'user/searchUserByEmail',
   async (email, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
       const res = await axiosClient.get(`/user/searchByEmail?email=${email}`);
       return res.data || null;
     } catch (error: unknown) {
@@ -92,7 +91,6 @@ export const getUserById = createAsyncThunk<UserType | null, string, { rejectVal
   'user/getUserById',
   async (userId, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
       const res = await axiosClient.get(`/user/${userId}`);
       return res.data || null;
     } catch (error: unknown) {

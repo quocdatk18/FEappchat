@@ -33,7 +33,7 @@ const ChatListSidebar = React.memo(function ChatListSidebar() {
   const searchResults = useSelector((state: RootState) => state.conversationReducer.searchResults);
 
   // Sử dụng useLoading hook
-  const { loading: isSearching, withLoading: withSearch } = useLoading();
+  const { withLoading: withSearch } = useLoading();
   const conversationLoading = useSelector((state: RootState) => state.conversationReducer.loading);
   const conversationError = useSelector((state: RootState) => state.conversationReducer.error);
 
@@ -475,7 +475,9 @@ const ChatListSidebar = React.memo(function ChatListSidebar() {
                           typeof conversation.unreadCount === 'object'
                         ) {
                           // Trường hợp mới: unreadCount là object/map
-                          const unreadCountObj = conversation.unreadCount as { get?: (key: string) => number } & Record<string, number>;
+                          const unreadCountObj = conversation.unreadCount as {
+                            get?: (key: string) => number;
+                          } & Record<string, number>;
                           unreadCount =
                             typeof unreadCountObj.get === 'function'
                               ? unreadCountObj.get(userId) || 0
